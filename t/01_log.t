@@ -34,7 +34,8 @@ Devel::KYTProf->add_prof(
     },
 );
 
-Devel::KYTProf->logger("Devel::KYTProf::Logger::XRay");
+my $logger = Devel::KYTProf::Logger::XRay->new;
+Devel::KYTProf->logger($logger);
 
 {
     local $AWS::XRay::TRACE_ID = AWS::XRay::new_trace_id();
@@ -43,6 +44,23 @@ Devel::KYTProf->logger("Devel::KYTProf::Logger::XRay");
     example("1");
     my ($seg) = parse_buf(1);
     is $seg->{name} => "main";
+    ok $seg->{end_time} - $seg->{start_time} >= 1.0;
+    is $seg->{metadata}->{time} => "1";
+    is $seg->{trace_id} => $AWS::XRay::TRACE_ID;
+}
+
+Devel::KYTProf->logger(Devel::KYTProf::Logger::XRay->new(segment_name_builder => sub {
+    my (%args) = @_;
+    return 'hello' . $args{module};
+}));
+
+{
+    local $AWS::XRay::TRACE_ID = AWS::XRay::new_trace_id();
+    local $AWS::XRay::ENABLED  = 1;
+
+    example("1");
+    my ($seg) = parse_buf(1);
+    is $seg->{name} => "hellomain";
     ok $seg->{end_time} - $seg->{start_time} >= 1.0;
     is $seg->{metadata}->{time} => "1";
     is $seg->{trace_id} => $AWS::XRay::TRACE_ID;
