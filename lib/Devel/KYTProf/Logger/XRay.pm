@@ -10,8 +10,8 @@ use Time::HiRes();
 our $VERSION = "0.04";
 
 sub new {
-    my ($class) = @_;
-    return bless {}, $class;
+    my ($class, %args) = @_;
+    return bless \%args, $class;
 }
 
 sub log {
@@ -19,7 +19,12 @@ sub log {
 
     return if !$AWS::XRay::ENABLED;
 
-    AWS::XRay::capture $args{module}, sub {
+    my $segment_name = $args{module};
+    if ($self->{segment_name_builder}) {
+        $segment_name = $self->{segment_name_builder}->(%args);
+    }
+
+    AWS::XRay::capture $segment_name, sub {
         my $segment = shift;
         my $elapsed = $args{time} / 1000; # msec -> sec
         my $end     = Time::HiRes::time();
@@ -68,6 +73,19 @@ Devel::KYTProf::Logger::XRay - Logger for AWS::XRay
 Devel::KYTProf::Logger::XRay is a logger for AWS::XRay.
 
 See also L<AWS::XRay>.
+
+=head1 CONFIGURATION
+
+=head2 segment_name_builder
+
+Code ref to generate custom segment name.
+
+Passed C<%args> that from C<log> method taken.
+
+    Devel::KYTProf::Logger::XRay->new(segment_name_builder => sub {
+        my (%args) = @_;
+        return 'seg:' . $args{module};
+    });
 
 =head1 LICENSE
 
