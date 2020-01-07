@@ -9,8 +9,13 @@ use Time::HiRes();
 
 our $VERSION = "0.04";
 
+sub new {
+    my ($class) = @_;
+    return bless {}, $class;
+}
+
 sub log {
-    my ($class, %args) = @_;
+    my ($self, %args) = @_;
 
     return if !$AWS::XRay::ENABLED;
 
@@ -55,7 +60,8 @@ Devel::KYTProf::Logger::XRay - Logger for AWS::XRay
 =head1 SYNOPSIS
 
     use Devel::KYTProf::Logger::XRay;
-    Devel::KYTProf->logger("Devel::KYTProf::Logger::XRay");
+    my $logger = Devel::KYTProf::Logger::XRay->new;
+    Devel::KYTProf->logger($logger);
 
 =head1 DESCRIPTION
 

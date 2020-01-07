@@ -34,7 +34,8 @@ Devel::KYTProf->add_prof(
     },
 );
 
-Devel::KYTProf->logger("Devel::KYTProf::Logger::XRay");
+my $logger = Devel::KYTProf::Logger::XRay->new;
+Devel::KYTProf->logger($logger);
 
 {
     local $AWS::XRay::TRACE_ID = AWS::XRay::new_trace_id();

@@ -5,13 +5,14 @@ Devel::KYTProf::Logger::XRay - Logger for AWS::XRay
 # SYNOPSIS
 
     use Devel::KYTProf::Logger::XRay;
-    Devel::KYTProf->logger("Devel::KYTProf::Logger::XRay");
+    my $logger = Devel::KYTProf::Logger::XRay->new;
+    Devel::KYTProf->logger($logger);
 
 # DESCRIPTION
 
 Devel::KYTProf::Logger::XRay is a logger for AWS::XRay.
 
-See also [AWS::XRay](https://metacpan.org/pod/AWS::XRay).
+See also [AWS::XRay](https://metacpan.org/pod/AWS%3A%3AXRay).
 
 # LICENSE
 
